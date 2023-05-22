@@ -1,9 +1,21 @@
 import express, { Express, Request, Response } from 'express';
+import { connectToDatabase } from "./services/database.service"
 import { products } from "./products"
 
 const app: Express = express();
 
 const port = 3000;
+
+connectToDatabase()
+    .then(() => {
+        app.listen(port, () => {
+            console.log(`Example app listening on port ${port}`);
+        });
+    })
+    .catch((error: Error) => {
+        console.error("Database connection failed", error);
+        process.exit();
+    })
 
 app.get('/', (req: Request, res: Response) => {
     res.set('Access-Control-Allow-Origin', 'http://localhost:4200');
@@ -23,6 +35,4 @@ app.delete('/user', (req: Request, res: Response) => {
     res.send('Got a DELETE request at /user')
 });
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
-});
+
