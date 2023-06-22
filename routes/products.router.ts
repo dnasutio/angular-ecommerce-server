@@ -47,6 +47,9 @@ productsRouter.get("/:id", async (req: Request, res: Response) => {
 productsRouter.post("/", async (req: Request, res: Response) => {
     try {
         const newProduct = req.body as Product;
+        if (!newProduct.id) {
+            newProduct.id = new ObjectId();
+        }
         console.log(req.body)
         if (collections.products) {
             const result = await collections.products.insertOne(newProduct);

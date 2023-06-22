@@ -17,6 +17,7 @@ connectToDatabase()
         // Then pass these options to cors:
         app.use(cors(options));
         app.use(express.json());
+        app.use(express.urlencoded({ extended: false }));
 
         app.use("/products", productsRouter);
 
