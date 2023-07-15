@@ -55,8 +55,8 @@ productsRouter.post("/", async (req: Request, res: Response) => {
             const result = await collections.products.insertOne(newProduct);
 
             result
-            ? res.status(201).send(`Successfully created a new Product with id ${result.insertedId}`)
-            : res.status(500).send("Failed to create a new Product.");
+                ? res.status(201).send(`Successfully created a new Product with id ${result.insertedId}`)
+                : res.status(500).send("Failed to create a new Product.");
         }
     } catch (error) {
         console.error(error);
@@ -77,11 +77,11 @@ productsRouter.put("/:id", async (req: Request, res: Response) => {
             const result = await collections.products.updateOne(query, { $set: updatedProduct });
 
             result
-            ? res.status(200).send(`Successfully updated Product with id ${id}`)
-            : res.status(304).send(`Product with id: ${id} not updated`);
+                ? res.status(200).send(`Successfully updated Product with id ${id}`)
+                : res.status(304).send(`Product with id: ${id} not updated`);
         }
 
-        
+
     } catch (error) {
         console.error(error);
         res.status(400).send(error);
@@ -104,6 +104,40 @@ productsRouter.delete("/:id", async (req: Request, res: Response) => {
                 res.status(400).send(`Failed to remove Product with id ${id}`);
             } else if (!result.deletedCount) {
                 res.status(404).send(`Product with id ${id} does not exist`);
+            }
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(400).send(error);
+    }
+});
+
+// Deletes selected products
+productsRouter.post("/deleteProducts", async (req: Request, res: Response) => {
+    console.log("Request ", req.body.products);
+    const productIds = req.body.products;
+    console.log("Ids", productIds)
+
+    let formattedIds = [];
+    for (const id of productIds) {
+        console.log("id ", id);
+        let formatted = new ObjectId(id);
+        formattedIds.push(formatted);
+    }
+
+    console.log("Formatted:", formattedIds);
+
+    try {
+        if (collections.products) {
+            const selected = { _id: { $in: formattedIds } };
+            const result = await collections.products.deleteMany(selected);
+
+            if (result && result.deletedCount) {
+                res.status(202).send(`Successfully removed Products with ids ${productIds}`);
+            } else if (!result) {
+                res.status(400).send(`Failed to remove Products with ids ${productIds}`);
+            } else if (!result.deletedCount) {
+                res.status(404).send(`Products with ids ${productIds} do not exist`);
             }
         }
     } catch (error) {

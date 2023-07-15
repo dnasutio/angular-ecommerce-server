@@ -1,3 +1,4 @@
+// FOR TESTING ONLY
 export interface Product {
     _id: string;
     name: string;
